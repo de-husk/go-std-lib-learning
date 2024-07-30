@@ -1,5 +1,10 @@
 package ring
 
+import (
+	"fmt"
+	"strings"
+)
+
 // TODO:
 // * func (r *Ring) Link(s *Ring) *Ring
 // * func (r *Ring) Move(n int) *Ring
@@ -63,17 +68,10 @@ func (r *Ring) Len() int {
 		return 1
 	}
 
-	count := 0
+	count := 1
 
-	rr := r
-	for {
+	for rr := r.Next(); rr != r; rr = rr.next {
 		count++
-
-		rr = rr.next
-
-		if rr == r {
-			break
-		}
 	}
 
 	return count
@@ -85,14 +83,27 @@ func (r *Ring) Do(f func(any)) {
 		return
 	}
 
-	rr := r
-	for {
+	f(r.Value)
+
+	for rr := r.Next(); rr != r; rr = rr.next {
 		f(rr.Value)
-
-		rr = rr.next
-
-		if rr == r {
-			break
-		}
 	}
+}
+
+func (r *Ring) String() string {
+	var sb strings.Builder
+
+	if r == nil {
+		return ""
+	}
+
+	fmt.Fprintf(&sb, " %v -> ", r.Value)
+
+	for rr := r.Next(); rr != r; rr = rr.next {
+		fmt.Fprintf(&sb, " %v -> ", rr.Value)
+	}
+
+	fmt.Fprintf(&sb, " ** %v ** ", r.Value)
+
+	return sb.String()
 }

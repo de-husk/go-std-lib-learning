@@ -1,6 +1,7 @@
 package ring
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -67,13 +68,26 @@ func TestDo(t *testing.T) {
 	if count != 11 {
 		t.Errorf("Expected count to be 11, but got: %d", count)
 	}
+}
 
+func TestNext(t *testing.T) {
+	r := New(4)
 	for i := 0; i < r.Len(); i++ {
 		r.Value = i
 		r = r.Next()
 	}
 
-	count = 0
+	fmt.Println(r)
+
+	if r.Value != 0 {
+		t.Errorf("Expected %d -  got %d", 0, r.Value)
+	}
+
+	if r.Next().Value != 1 {
+		t.Errorf("Expected %d -  got %d", 1, r.Next().Value)
+	}
+
+	count := 0
 	r.Do(func(p any) {
 		count += p.(int)
 	})
@@ -83,8 +97,31 @@ func TestDo(t *testing.T) {
 	if count != expected {
 		t.Errorf("Expected %d -  got %d", expected, count)
 	}
+}
 
-	// TODO: Split this out into another Test
-	// TODO: Make a version of this test that calls Prev()
+func TestPrev(t *testing.T) {
+	r := New(42)
+	for i := 0; i < r.Len(); i++ {
+		r.Value = i
+		r = r.Next()
+	}
 
+	if r.Value != 0 {
+		t.Errorf("Expected %d -  got %d", 0, r.Value)
+	}
+
+	if r.Prev().Value != 41 {
+		t.Errorf("Expected %d -  got %d", 41, r.Prev().Value)
+	}
+
+	count := 0
+	r.Do(func(p any) {
+		count += p.(int)
+	})
+
+	expected := ((r.Len() - 1) * (r.Len() - 1 + 1)) / 2
+
+	if count != expected {
+		t.Errorf("Expected %d -  got %d", expected, count)
+	}
 }
