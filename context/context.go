@@ -116,7 +116,7 @@ func WithCancel(parent Context) (Context, CancelFunc) {
 		done:   make(chan struct{}),
 	}
 
-	// TODO: Can we avoid running a go routine per cancellable context?
+	// TODO: Delete this goroutine by storing the children in cancelCtx and canceling the children directly
 	go func() {
 		select {
 		case <-ctx.parent.Done():
@@ -222,7 +222,8 @@ func WithTimeout(parent Context, timeout time.Duration) (Context, CancelFunc) {
 
 	t := time.NewTimer(timeout)
 
-	// TODO: Can we avoid running a go routine per cancellable context?
+	// TODO: Delete this goroutine by storing the children in cancelCtx and canceling the children directly
+	// We still need to call cancel() in a time.AfterFunc(deadline) which will still add a goroutine for that period of time
 	go func() {
 		select {
 		case <-ctx.parent.Done():
@@ -273,7 +274,8 @@ func WithDeadline(parent Context, d time.Time) (Context, CancelFunc) {
 
 	t := time.NewTimer(tt)
 
-	// TODO: Can we avoid running a go routine per cancellable context?
+	// TODO: Delete this goroutine by storing the children in cancelCtx and canceling the children directly
+	// We still need to call cancel() in a time.AfterFunc(deadline) which will still add a goroutine for that period of time
 	go func() {
 		select {
 		case <-ctx.parent.Done():

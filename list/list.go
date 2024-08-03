@@ -1,7 +1,5 @@
 package list
 
-import "context"
-
 // Element is an item in a linked list
 type Element struct {
 	Value any
@@ -11,9 +9,6 @@ type Element struct {
 
 // Returns the next list element or nil
 func (e *Element) Next() *Element {
-
-	context.WithCancel(context.Background())
-
 	return e.next
 }
 
